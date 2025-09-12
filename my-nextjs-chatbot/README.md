@@ -34,3 +34,27 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## 🏗️ Architecture Overview
+
+```mermaid
+flowchart TD
+    A[Frontend (React / Next.js Pages)]
+    B[Next.js API Routes]
+    C[Controller Layer]
+    D[DAO (Database Access Object)]
+    E[error.js (Error Handling)]
+
+    %% Request flow
+    A -->|HTTP Request| B
+    B -->|Delegate| C
+    C -->|Query / Persist| D
+
+    %% Error handling
+    C -->|On Error| E
+    D -->|On Error| E
+
+    %% Response flow
+    D -->|Data| C
+    C -->|Response| B
+    B -->|HTTP Response| A

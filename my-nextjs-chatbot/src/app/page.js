@@ -1,19 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import "./chatbot.css"; // global CSS
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
-  const [result, setResult] = useState("");
+  const [messages, setMessages] = useState([
+    { role: "bot", text: "Hello! I’m Gemini 🤖" },
+  ]);
 
   function formatResult(geminiRawResult) {
-    // Gemini may not return you the properly formatted text.
-    // TODO: You need to update the code of this function to tranform the geminiRawResult to a well formatted result. Hint: You may use some regular expressions for find/replace. 
-    const formattedResult = geminiRawResult;
-    return formattedResult;
+    return geminiRawResult.trim();
   }
 
   async function sendPrompt() {
+    if (!prompt) return;
+
+    // add user message
+    setMessages((prev) => [...prev, { role: "user", text: prompt }]);
+
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -21,23 +26,36 @@ export default function Home() {
     });
     const data = await res.json();
     const formattedResult = formatResult(data.content || data.error);
-    setResult(data.content || data.error);
+
+    // add bot response
+    setMessages((prev) => [...prev, { role: "bot", text: formattedResult }]);
+
+    setPrompt(""); // clear input
   }
 
   return (
-    //TODO: Make your UI look better by adding additional elements and styles as you wish! Possibly add your styles to a new css file called chatbot.css, and import that file in this page
-    <main style={{ padding: "2rem" }}>
-      <h1>My Next.js Chatbot</h1>
-      <textarea
-        rows="5"
-        cols="50"
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Type your prompt..."
-      />
-      <br />
-      <button onClick={sendPrompt}>Generate</button>
-      <pre>{result}</pre>
-    </main>
+    <div className="chatbot">
+      {/* Messages */}
+      <div className="chat-messages">
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            className={`message ${msg.role === "bot" ? "bot" : "user"}`}
+          >
+            {msg.text}
+          </div>
+        ))}
+      </div>
+
+      {/* Input */}
+      <div className="chat-input">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Type your message..."
+        />
+        <button onClick={sendPrompt}>Send</button>
+      </div>
+    </div>
   );
 }
