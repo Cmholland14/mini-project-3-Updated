@@ -1,3 +1,12 @@
+.chat-header {
+  padding: 16px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  background: #253ceb;
+  color: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
 
 .chatbot {
   display: flex;

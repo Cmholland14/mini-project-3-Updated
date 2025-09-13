@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import "./chatbot.css"; // global CSS
+import "./chatbot.css"; 
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
@@ -9,33 +9,44 @@ export default function Home() {
     { role: "bot", text: "Hello! I’m Gemini 🤖" },
   ]);
 
-  function formatResult(geminiRawResult) {
-    return geminiRawResult.trim();
-  }
+function formatResult(geminiRawResult) {
+  let formattedResult = geminiRawResult
+    .replace(/\*\*(.*?)\*\*/g, "$1")           // remove bold
+    .replace(/`([^`]+)`/g, "$1")               // remove inline code
+    .replace(/```[\s\S]*?```/g, match =>
+      match.replace(/```[a-zA-Z]*\n?/g, "").replace(/```/g, "")
+    )
+    .replace(/^\*\s+/gm, "")                    // remove bullet * at start of line
+    .replace(/\*(.*?)\*/g, "$1")               // remove remaining italics
+    .replace(/\n{2,}/g, "\n")                  // collapse multiple newlines
+    .replace(/\s{2,}/g, " ")                   // collapse multiple spaces
+    .trim();
+
+  return formattedResult;
+}
 
   async function sendPrompt() {
     if (!prompt) return;
 
-    // add user message
-    setMessages((prev) => [...prev, { role: "user", text: prompt }]);
+    setMessages(prev => [...prev, { role: "user", text: prompt }]);
 
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt }),
     });
+
     const data = await res.json();
     const formattedResult = formatResult(data.content || data.error);
 
-    // add bot response
-    setMessages((prev) => [...prev, { role: "bot", text: formattedResult }]);
-
-    setPrompt(""); // clear input
+    setMessages(prev => [...prev, { role: "bot", text: formattedResult }]);
+    setPrompt(""); 
   }
 
   return (
     <div className="chatbot">
-      {/* Messages */}
+      <div className="chat-header">Chatbot</div>
+
       <div className="chat-messages">
         {messages.map((msg, i) => (
           <div
@@ -47,7 +58,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Input */}
       <div className="chat-input">
         <textarea
           value={prompt}
