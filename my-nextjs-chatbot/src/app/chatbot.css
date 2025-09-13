@@ -1,9 +1,12 @@
 .chat-header {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* stays above messages */
   padding: 16px;
   text-align: center;
   font-size: 18px;
   font-weight: bold;
-  background: #253ceb;
+  background: #eb25d7;
   color: #fff;
   border-bottom: 1px solid #e5e7eb;
 }

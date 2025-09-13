@@ -5,9 +5,7 @@ import Link from 'next/link';
 
 export default function GlobalError({ error, reset }) {
   useEffect(() => {
-    // Log for observability (replace with Sentry/Bugsnag etc.)
-    // Example: Sentry.captureException(error);
-    // eslint-disable-next-line no-console
+
     console.error('Global error boundary:', error);
   }, [error]);
 
